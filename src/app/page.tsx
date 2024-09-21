@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useEffect } from 'react';
 import Popup from './components/Popup';
 
@@ -8,36 +8,53 @@ export default function Home() {
   const [securityKey, setSecurityKey] = useState<string | null>(null);
   const [popupStatus, setPopupStatus] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
 
+  const handleSubmit = async () => {
     const res = await new Promise((resolve) =>
       setTimeout(() => resolve('success'), 1000)
     );
-
     setPopupStatus(res as string);
   };
 
-  const closePopup = () => {
-    setPopupStatus(null);
+  const handleNextScan = () => {
+
     setEventId(null);
     setTicketId(null);
     setSecurityKey(null);
+    setPopupStatus(null);
   };
-  useEffect(() => {
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleNextScan();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+
+  useEffect(() => {
     if (eventId && ticketId && securityKey) {
       handleSubmit();
     }
   }, [eventId, ticketId, securityKey]);
 
+
+  const closePopup = () => {
+    setPopupStatus(null);
+  };
+
   useEffect(() => {
-
     if (popupStatus) {
-      const timer = setTimeout(() => {
-        closePopup();
-      }, 3000);
-
-
+      const timer = setTimeout(() => closePopup(), 3000);
       return () => clearTimeout(timer);
     }
   }, [popupStatus]);
@@ -78,11 +95,18 @@ export default function Home() {
           <input
             id="securityKey"
             type="text"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full mb-6 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             value={securityKey || ''}
             onChange={(e) => setSecurityKey(e.target.value)}
           />
         </div>
+        <button
+          type="button"
+          onClick={handleNextScan}
+          className="bg-blue-500 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg"
+        >
+          Next Scan
+        </button>
       </form>
 
       {popupStatus && <Popup status={popupStatus} />}
