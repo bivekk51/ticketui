@@ -10,6 +10,8 @@ export default function Home() {
 
 
   const handleSubmit = async () => {
+    //popup check garna fake api call 
+    // params: success,fail,duplicate
     const res = await new Promise((resolve) =>
       setTimeout(() => resolve('success'), 1000)
     );
