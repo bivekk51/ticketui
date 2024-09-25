@@ -22,13 +22,13 @@ export default function Home() {
     const extractedTicketId = params.get('ticket_id');
     const extractedSecurityKey = params.get('security_code');
 
-    const delay = setTimeout(() => {
-      setEventId(extractedEventId);
-      setTicketId(extractedTicketId);
-      setSecurityKey(extractedSecurityKey);
-    }, 2000);
 
-    return () => clearTimeout(delay);
+    setEventId(extractedEventId);
+    setTicketId(extractedTicketId);
+    setSecurityKey(extractedSecurityKey);
+
+
+
   }, [url]);
 
 
