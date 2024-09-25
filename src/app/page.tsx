@@ -8,7 +8,7 @@ export default function Home() {
   const [securityKey, setSecurityKey] = useState<string | null>(null);
   const [popupStatus, setPopupStatus] = useState<string | null>(null);
   const apiKey = process.env.NEXT_PUBLIC_API_KEY;
-  console.log('API Key:', process.env.NEXT_PUBLIC_API_KEY);
+
 
 
   const url = 'https://tixort.au/?event_qr_code=1&ticket_id=10614&event_id=10601&security_code=69b3ab0bd3&path=wp-json%2Ftribe%2Ftickets%2Fv1%2Fqr';
@@ -39,7 +39,6 @@ export default function Home() {
       const response = await fetch(apiUrl);
       if (response.ok) {
         const data = await response.json();
-        console.log(`Message: ${data.msg}`);
         setPopupStatus(data.msg);
       } else {
         const data = await response.json();
