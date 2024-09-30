@@ -12,8 +12,18 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: "0" }, // Changed to string
+          '100%': { opacity: "1" }, // Changed to string
+        },
+      },
+      animation: {
+        fadeIn: 'fadeIn 1s ease-in-out',
+      },
     },
   },
   plugins: [],
 };
+
 export default config;

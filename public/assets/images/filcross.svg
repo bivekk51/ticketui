@@ -1,0 +1,11 @@
+<svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" class="iconify iconify--twemoji" preserveAspectRatio="xMidYMid meet" stroke="#FFFFFF" stroke-width="2">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#61f86d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#48f585;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <g>
+    <path fill="url(#grad1)" stroke="#FFFFFF" d="M22.238 18.004l9.883-9.883a3 3 0 1 0-4.242-4.243l-9.883 9.883l-9.883-9.882a3 3 0 1 0-4.243 4.243l9.883 9.882l-9.907 9.907a3 3 0 1 0 4.243 4.242l9.906-9.906l9.882 9.882c.586.586 1.354.879 2.121.879s1.535-.293 2.121-.879a3 3 0 0 0-4.242-4.242l-9.881-9.883z"/>
+  </g>
+</svg>
