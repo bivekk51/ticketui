@@ -87,7 +87,7 @@ export default function TicketScan() {
                 <h1 className="text-2xl font-bold text-center mb-6 text-[#0A1B4D]">Ticket Scan</h1>
 
                 <form>
-                    {/* Event ID Input */}
+
                     <div className="mb-4">
                         <label htmlFor="eventId" className="block text-sm font-medium text-gray-700">
                             Event ID
@@ -101,7 +101,7 @@ export default function TicketScan() {
                         />
                     </div>
 
-                    {/* Ticket ID Input */}
+
                     <div className="mb-4">
                         <label htmlFor="ticketId" className="block text-sm font-medium text-gray-700">
                             Ticket ID
@@ -119,6 +119,8 @@ export default function TicketScan() {
                         <label htmlFor="securityKey" className="block text-sm font-medium text-gray-700">
                             Security Key
                         </label>
+
+
                         <input
                             id="securityKey"
                             type="text"
@@ -138,7 +140,7 @@ export default function TicketScan() {
                 </form>
             </div>
 
-            {/* Display popup if available */}
+
             {popupStatus && <Popup status={popupStatus} />}
         </div>
     );

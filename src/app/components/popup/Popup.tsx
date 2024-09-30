@@ -1,4 +1,4 @@
-'use client'; // Ensures the component works in a client-side context
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
@@ -12,9 +12,9 @@ const Popup: React.FC<PopupProps> = ({ status }) => {
 
     useEffect(() => {
         if (status) {
-            setIsVisible(true); // Show popup when status is valid
+            setIsVisible(true);
         } else {
-            setIsVisible(false); // Hide popup when status is invalid
+            setIsVisible(false);
         }
     }, [status]);
 
@@ -22,7 +22,7 @@ const Popup: React.FC<PopupProps> = ({ status }) => {
     let bgColor = '';
     let imageSrc = '';
 
-    // Define messages, background colors, and image sources based on the status
+
     if (status === 'Checked In!') {
         message = 'Success Checked In!';
         bgColor = 'bg-green-500';
@@ -37,7 +37,7 @@ const Popup: React.FC<PopupProps> = ({ status }) => {
         imageSrc = '/assets/images/alreadycheckedin.svg';
     }
 
-    // Return null if the popup is not visible
+
     if (!isVisible) return null;
 
     return (
@@ -65,7 +65,7 @@ const Popup: React.FC<PopupProps> = ({ status }) => {
 
             </div>
 
-            {/* Internal CSS for animations */}
+
             <style jsx>{`
                 @keyframes upDown {
                     0% {

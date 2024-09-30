@@ -36,7 +36,7 @@ const HomePage = () => {
         <div className="min-h-screen bg-[#0A1B4D]">
             <Navbar />
 
-            {/* Internal CSS for animation */}
+
             <style jsx>{`
         @keyframes fadeInFromBottom {
           0% {
@@ -99,7 +99,7 @@ const HomePage = () => {
         }
       `}</style>
 
-            {/* Main Content */}
+
             <div className="flex flex-col justify-center items-start h-screen text-white px-8">
                 <div className="space-y-8">
                     <div className="crosses flex gap-2">
@@ -118,9 +118,9 @@ const HomePage = () => {
                             className="cross-2 mb-6"
                         />
                     </div>
-                    {/* Main Heading */}
+
                     <h1 className="text-6xl md:text-8xl font-extrabold uppercase">
-                        {/* Animate "Upcoming", "Live", and "Events" letter by letter */}
+
                         <div>
                             {words.upcoming.split("").map((letter, index) => (
                                 <span
@@ -156,12 +156,12 @@ const HomePage = () => {
                         </div>
                     </h1>
 
-                    {/* Subtitle appears after the main heading */}
+
                     <p className="text-xl font-light subtitle">
                         We enjoy live music with local artists
                     </p>
 
-                    {/* Crosses with sea-saw up and down animation */}
+
 
                 </div>
             </div>
