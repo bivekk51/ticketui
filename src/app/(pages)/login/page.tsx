@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import Image from 'next/image'; // Import Image component
 
 const LoginPage = () => {
     const router = useRouter();
@@ -31,17 +32,14 @@ const LoginPage = () => {
         );
 
         if (isValidUser) {
-            // Set success state and delay the navigation
             setSuccess(true);
             setError('');
 
-            // Store login status in localStorage
             localStorage.setItem('isLoggedIn', 'true');
 
-            // Delay the navigation to TicketScan page
             setTimeout(() => {
                 router.push('/ticketscan');
-            }, 2000); // Delay by 2 seconds (2000 ms)
+            }, 2000);
         } else {
             setSuccess(false);
             setError('Invalid username/email or password');
@@ -49,7 +47,18 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#0A1B4D]">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-[#0A1B4D]">
+
+            {/* Logo Section on the dark background */}
+            <div className="mb-8">
+                <Image
+                    src="/assets/images/tixort-logo-light.png" // Use the correct image path
+                    alt="Tixort Logo"
+                    width={200}
+                    height={80}
+                />
+            </div>
+
             <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
                 <h1 className="text-2xl font-bold text-center mb-6 text-[#0A1B4D]">Login</h1>
 
