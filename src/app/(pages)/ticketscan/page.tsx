@@ -29,15 +29,18 @@ export default function TicketScan() {
             try {
                 const parsedUrl = new URL(scannedUrl);
                 const params = new URLSearchParams(parsedUrl.search);
+
                 const extractedEventId = params.get('event_id');
                 const extractedTicketId = params.get('ticket_id');
                 const extractedSecurityKey = params.get('security_code');
 
                 if (extractedEventId && extractedTicketId && extractedSecurityKey) {
-                    setEventId(extractedEventId);
-                    setTicketId(extractedTicketId);
-                    setSecurityKey(extractedSecurityKey);
-                    setCanScan(false); // Disable further scans after successful scan
+                    if (extractedSecurityKey.length === 10) {
+                        setEventId(extractedEventId);
+                        setTicketId(extractedTicketId);
+                        setSecurityKey(extractedSecurityKey);
+                        setCanScan(false);
+                    }
                 } else {
                     setEventId(null);
                     setTicketId(null);
@@ -45,9 +48,11 @@ export default function TicketScan() {
                 }
             } catch (error) {
                 console.error('Invalid URL:', error);
+
             }
         }
     }, [scannedUrl, canScan]);
+
 
     const handleSubmit = useCallback(async () => {
         const apiUrl = `/api/v1/tickets/qr?ticket_id=${ticketId}&event_id=${eventId}&security_code=${securityKey}&api_key=${apiKey}`;
@@ -73,10 +78,10 @@ export default function TicketScan() {
         setPopupStatus(null);
         setScannedUrl('');
 
-        // Re-enable scanning after state updates
+
         setCanScan(true);
 
-        // Focus the hidden input field to be ready for the next scan
+
         const inputField = document.getElementById('qrInput');
         if (inputField) {
             inputField.focus();
@@ -90,9 +95,9 @@ export default function TicketScan() {
         }
 
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Enter') {
+            if (e.key === ' ') {
                 e.preventDefault();
-                handleNextScan(); // Reset and allow new scan
+                handleNextScan();
             }
         };
 
