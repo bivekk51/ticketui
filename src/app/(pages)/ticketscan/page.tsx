@@ -12,6 +12,7 @@ export default function TicketScan() {
     const [securityKey, setSecurityKey] = useState<string | null>(null);
     const [popupStatus, setPopupStatus] = useState<string | null>(null);
     const [scannedUrl, setScannedUrl] = useState('');
+    const [canScan, setCanScan] = useState(true); // Disable further scans after a valid one
     const apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
     useEffect(() => {
@@ -24,7 +25,7 @@ export default function TicketScan() {
     }, [router]);
 
     useEffect(() => {
-        if (scannedUrl) {
+        if (scannedUrl && canScan) {
             try {
                 const parsedUrl = new URL(scannedUrl);
                 const params = new URLSearchParams(parsedUrl.search);
@@ -36,6 +37,7 @@ export default function TicketScan() {
                     setEventId(extractedEventId);
                     setTicketId(extractedTicketId);
                     setSecurityKey(extractedSecurityKey);
+                    setCanScan(false); // Disable further scans after successful scan
                 } else {
                     setEventId(null);
                     setTicketId(null);
@@ -45,7 +47,7 @@ export default function TicketScan() {
                 console.error('Invalid URL:', error);
             }
         }
-    }, [scannedUrl]);
+    }, [scannedUrl, canScan]);
 
     const handleSubmit = useCallback(async () => {
         const apiUrl = `/api/v1/tickets/qr?ticket_id=${ticketId}&event_id=${eventId}&security_code=${securityKey}&api_key=${apiKey}`;
@@ -71,6 +73,10 @@ export default function TicketScan() {
         setPopupStatus(null);
         setScannedUrl('');
 
+        // Re-enable scanning after state updates
+        setCanScan(true);
+
+        // Focus the hidden input field to be ready for the next scan
         const inputField = document.getElementById('qrInput');
         if (inputField) {
             inputField.focus();
@@ -86,9 +92,10 @@ export default function TicketScan() {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                handleNextScan();
+                handleNextScan(); // Reset and allow new scan
             }
         };
+
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
@@ -99,6 +106,16 @@ export default function TicketScan() {
             return () => clearTimeout(timer);
         }
     }, [popupStatus]);
+
+    useEffect(() => {
+        // Ensure focus when canScan is enabled again after reset
+        if (canScan) {
+            const inputField = document.getElementById('qrInput');
+            if (inputField) {
+                inputField.focus();
+            }
+        }
+    }, [canScan]); // Focus when canScan is set to true
 
     if (isCheckingAuth) {
         return null;
@@ -115,11 +132,16 @@ export default function TicketScan() {
                     value={scannedUrl}
                     onChange={(e) => setScannedUrl(e.target.value)}
                     style={{
-                        position: 'absolute',
+                        position: 'absolute',  // Hide input field visually
                         left: '-9999px',
                     }}
                     autoFocus
+                    disabled={!canScan} // Disable input after a valid scan
                 />
+
+                {canScan && <p className='text-lg'>
+                    Ready for Scan
+                </p>}
 
                 <div className="mb-4">
                     <label htmlFor="eventId" className="block text-sm font-medium text-gray-700">
