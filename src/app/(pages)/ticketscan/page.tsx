@@ -11,7 +11,7 @@ export default function TicketScan() {
     const [ticketId, setTicketId] = useState<string | null>(null);
     const [securityKey, setSecurityKey] = useState<string | null>(null);
     const [popupStatus, setPopupStatus] = useState<string | null>(null);
-    const [scannedUrl, setScannedUrl] = useState('');  // State for scanned URL
+    const [scannedUrl, setScannedUrl] = useState('');
     const apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
     useEffect(() => {
@@ -23,21 +23,29 @@ export default function TicketScan() {
         }
     }, [router]);
 
-
     useEffect(() => {
         if (scannedUrl) {
-            const parsedUrl = new URL(scannedUrl);
-            const params = new URLSearchParams(parsedUrl.search);
-            const extractedEventId = params.get('event_id');
-            const extractedTicketId = params.get('ticket_id');
-            const extractedSecurityKey = params.get('security_code');
+            try {
+                const parsedUrl = new URL(scannedUrl);
+                const params = new URLSearchParams(parsedUrl.search);
+                const extractedEventId = params.get('event_id');
+                const extractedTicketId = params.get('ticket_id');
+                const extractedSecurityKey = params.get('security_code');
 
-            setEventId(extractedEventId);
-            setTicketId(extractedTicketId);
-            setSecurityKey(extractedSecurityKey);
+                if (extractedEventId && extractedTicketId && extractedSecurityKey) {
+                    setEventId(extractedEventId);
+                    setTicketId(extractedTicketId);
+                    setSecurityKey(extractedSecurityKey);
+                } else {
+                    setEventId(null);
+                    setTicketId(null);
+                    setSecurityKey(null);
+                }
+            } catch (error) {
+                console.error('Invalid URL:', error);
+            }
         }
     }, [scannedUrl]);
-
 
     const handleSubmit = useCallback(async () => {
         const apiUrl = `/api/v1/tickets/qr?ticket_id=${ticketId}&event_id=${eventId}&security_code=${securityKey}&api_key=${apiKey}`;
@@ -63,13 +71,11 @@ export default function TicketScan() {
         setPopupStatus(null);
         setScannedUrl('');
 
-
         const inputField = document.getElementById('qrInput');
         if (inputField) {
             inputField.focus();
         }
     };
-
 
     useEffect(() => {
         const inputField = document.getElementById('qrInput');
@@ -87,7 +93,6 @@ export default function TicketScan() {
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-
     useEffect(() => {
         if (popupStatus) {
             const timer = setTimeout(() => setPopupStatus(null), 3000);
@@ -104,19 +109,17 @@ export default function TicketScan() {
             <div className="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full transition-all duration-300">
                 <h1 className="text-2xl font-bold text-center mb-6 text-[#0A1B4D]">Ticket Scan</h1>
 
-
                 <input
                     id="qrInput"
                     type="text"
                     value={scannedUrl}
                     onChange={(e) => setScannedUrl(e.target.value)}
                     style={{
-                        position: 'absolute',  // Hide input field visually
+                        position: 'absolute',
                         left: '-9999px',
                     }}
                     autoFocus
                 />
-
 
                 <div className="mb-4">
                     <label htmlFor="eventId" className="block text-sm font-medium text-gray-700">
