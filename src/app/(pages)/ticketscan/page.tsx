@@ -12,7 +12,7 @@ export default function TicketScan() {
     const [securityKey, setSecurityKey] = useState<string | null>(null);
     const [popupStatus, setPopupStatus] = useState<string | null>(null);
     const [scannedUrl, setScannedUrl] = useState('');
-    const [canScan, setCanScan] = useState(true); // Disable further scans after a valid one
+    const [canScan, setCanScan] = useState(true);
     const apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
     useEffect(() => {
@@ -105,22 +105,17 @@ export default function TicketScan() {
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    useEffect(() => {
-        if (popupStatus) {
-            const timer = setTimeout(() => setPopupStatus(null), 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [popupStatus]);
+
 
     useEffect(() => {
-        // Ensure focus when canScan is enabled again after reset
+
         if (canScan) {
             const inputField = document.getElementById('qrInput');
             if (inputField) {
                 inputField.focus();
             }
         }
-    }, [canScan]); // Focus when canScan is set to true
+    }, [canScan]);
 
     if (isCheckingAuth) {
         return null;
