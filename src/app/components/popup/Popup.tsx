@@ -27,7 +27,7 @@ const Popup: React.FC<PopupProps> = ({ status }) => {
         message = 'Success Checked In!';
         bgColor = 'bg-green-500';
         imageSrc = '/assets/images/accepted.svg';
-    } else if (status === 'Security code is not valid!') {
+    } else if (status === 'Security code is not valid!' || status === 'Invalid!') {
         message = 'Invalid Ticket!';
         bgColor = 'bg-red-500';
         imageSrc = '/assets/images/failed.svg';
