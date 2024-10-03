@@ -75,6 +75,9 @@ export default function TicketScan() {
             if (e.key === ' ') {
                 e.preventDefault();
                 handleNextScan();
+            } else if (e.key === 'Enter') {
+                // Prevent the form from submitting or reloading the page
+                e.preventDefault();
             }
         };
 
@@ -100,8 +103,9 @@ export default function TicketScan() {
                 const parsedUrl = new URL(inputUrl);
                 const params = new URLSearchParams(parsedUrl.search);
 
-                const extractedEventId = params.get('event_id');
                 const extractedTicketId = params.get('ticket_id');
+                const extractedEventId = params.get('event_id');
+
                 const extractedSecurityKey = params.get('security_code');
 
                 if (extractedEventId && extractedTicketId && extractedSecurityKey) {
