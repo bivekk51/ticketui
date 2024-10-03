@@ -96,6 +96,7 @@ export default function TicketScan() {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
             try {
+                console.log(inputUrl)
                 const parsedUrl = new URL(inputUrl);
                 const params = new URLSearchParams(parsedUrl.search);
 
