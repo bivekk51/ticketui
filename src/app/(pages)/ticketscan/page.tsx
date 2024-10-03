@@ -13,10 +13,10 @@ export default function TicketScan() {
     const [popupStatus, setPopupStatus] = useState<string | null>(null);
     const [scannedUrl, setScannedUrl] = useState('');
     const [canScan, setCanScan] = useState(true);
-    const [attendeeName, setattendeeName] = useState("")
-    const [attendeeTicket, setattendeeTicket] = useState("")
+    const [attendeeName, setAttendeeName] = useState("");
+    const [attendeeTicket, setAttendeeTicket] = useState("");
     const apiKey = process.env.NEXT_PUBLIC_API_KEY;
-    let timeout: NodeJS.Timeout; // Specify the type for timeout
+    let timeout: NodeJS.Timeout;
 
     useEffect(() => {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -27,43 +27,16 @@ export default function TicketScan() {
         }
     }, [router]);
 
-    useEffect(() => {
-        if (scannedUrl && canScan) {
-            try {
-                const parsedUrl = new URL(scannedUrl);
-                const params = new URLSearchParams(parsedUrl.search);
-
-                const extractedEventId = params.get('event_id');
-                const extractedTicketId = params.get('ticket_id');
-                const extractedSecurityKey = params.get('security_code');
-
-                if (extractedEventId && extractedTicketId && extractedSecurityKey) {
-                    if (extractedSecurityKey.length === 10) {
-                        setEventId(extractedEventId);
-                        setTicketId(extractedTicketId);
-                        setSecurityKey(extractedSecurityKey);
-                        setCanScan(false);
-                    }
-                } else {
-                    setPopupStatus('Invalid!');
-                }
-            } catch (error) {
-                console.error('Invalid URL:', error);
-            }
-        }
-    }, [scannedUrl, canScan]);
-
     const handleSubmit = useCallback(async () => {
-
         const apiUrl = `/api/v1/tickets/qr?ticket_id=${ticketId}&event_id=${eventId}&security_code=${securityKey}&api_key=${apiKey}`;
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
             if (data.mssg === "Checked In!") {
-                const attendeName = data.attendee.title;
-                const attendeTicket = data.attendee.ticket.title;
-                setattendeeName(attendeName);
-                setattendeeTicket(attendeTicket);
+                const attendeeName = data.attendee.title;
+                const attendeeTicket = data.attendee.ticket.title;
+                setAttendeeName(attendeeName);
+                setAttendeeTicket(attendeeTicket);
                 setPopupStatus(data.msg);
             } else {
                 setPopupStatus(data.msg);
@@ -71,11 +44,7 @@ export default function TicketScan() {
         } catch (error) {
             console.error('Error fetching the API:', error);
         }
-
-
-
     }, [ticketId, eventId, securityKey, apiKey]);
-
 
     useEffect(() => {
         if (eventId && ticketId && securityKey) {
@@ -122,18 +91,32 @@ export default function TicketScan() {
         }
     }, [canScan]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { // Specify the type for 'e'
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputUrl = e.target.value;
         clearTimeout(timeout);
         timeout = setTimeout(() => {
-            setScannedUrl(inputUrl);
-            const parsedUrl = new URL(inputUrl);
-            const params = new URLSearchParams(parsedUrl.search);
+            try {
+                const parsedUrl = new URL(inputUrl);
+                const params = new URLSearchParams(parsedUrl.search);
 
-            if (!params.get('event_id') || !params.get('ticket_id') || !params.get('security_code')) {
-                setPopupStatus('Invalid');
+                const extractedEventId = params.get('event_id');
+                const extractedTicketId = params.get('ticket_id');
+                const extractedSecurityKey = params.get('security_code');
+
+                if (extractedEventId && extractedTicketId && extractedSecurityKey) {
+                    if (extractedSecurityKey.length === 10) {
+                        setEventId(extractedEventId);
+                        setTicketId(extractedTicketId);
+                        setSecurityKey(extractedSecurityKey);
+                        setCanScan(false);
+                    }
+                } else {
+                    setPopupStatus('Invalid!');
+                }
+            } catch (error) {
+                console.error('Invalid URL:', error);
             }
-        }, 3000);
+        }, 5000); // Process the URL after 5 seconds
     };
 
     if (isCheckingAuth) {
@@ -148,7 +131,6 @@ export default function TicketScan() {
                 <input
                     id="qrInput"
                     type="text"
-                    value={scannedUrl}
                     onChange={handleChange}
                     style={{
                         position: 'absolute',
@@ -158,9 +140,7 @@ export default function TicketScan() {
                     disabled={!canScan}
                 />
 
-                {canScan && <p className='text-lg'>
-                    Ready for Scan
-                </p>}
+                {canScan && <p className='text-lg'>Ready for Scan</p>}
 
                 <div className="mb-4">
                     <label htmlFor="eventId" className="block text-sm font-medium text-gray-700">
