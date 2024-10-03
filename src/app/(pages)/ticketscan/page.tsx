@@ -11,7 +11,7 @@ export default function TicketScan() {
     const [ticketId, setTicketId] = useState<string | null>(null);
     const [securityKey, setSecurityKey] = useState<string | null>(null);
     const [popupStatus, setPopupStatus] = useState<string | null>(null);
-    const [scannedUrl, setScannedUrl] = useState('');
+    const [, setScannedUrl] = useState('');
     const [canScan, setCanScan] = useState(true);
     const [attendeeName, setAttendeeName] = useState("");
     const [attendeeTicket, setAttendeeTicket] = useState("");
