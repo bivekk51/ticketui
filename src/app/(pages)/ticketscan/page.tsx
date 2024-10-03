@@ -14,7 +14,7 @@ export default function TicketScan() {
     const [scannedUrl, setScannedUrl] = useState('');
     const [canScan, setCanScan] = useState(true);
     const apiKey = process.env.NEXT_PUBLIC_API_KEY;
-    let timeout;
+    let timeout: NodeJS.Timeout; // Specify the type for timeout
 
     useEffect(() => {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -107,7 +107,7 @@ export default function TicketScan() {
         }
     }, [canScan]);
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { // Specify the type for 'e'
         const inputUrl = e.target.value;
         clearTimeout(timeout);
         timeout = setTimeout(() => {
