@@ -132,10 +132,7 @@ export default function TicketScan() {
                     id="qrInput"
                     type="text"
                     onChange={handleChange}
-                    style={{
-                        position: 'absolute',
-                        left: '-9999px',
-                    }}
+
                     autoFocus
                     value={scannedUrl}
                     disabled={!canScan}
