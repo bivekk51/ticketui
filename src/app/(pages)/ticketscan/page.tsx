@@ -99,7 +99,7 @@ export default function TicketScan() {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
             try {
-                console.log(inputUrl)
+
                 const parsedUrl = new URL(inputUrl);
                 const params = new URLSearchParams(parsedUrl.search);
 
@@ -117,9 +117,11 @@ export default function TicketScan() {
                     }
                 } else {
                     setPopupStatus('Invalid!');
+
                 }
             } catch (error) {
                 console.error('Invalid URL:', error);
+                console.log(inputUrl)
             }
         }, 5000); // Process the URL after 5 seconds
     };
