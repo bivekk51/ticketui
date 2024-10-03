@@ -133,7 +133,7 @@ export default function TicketScan() {
             if (!params.get('event_id') || !params.get('ticket_id') || !params.get('security_code')) {
                 setPopupStatus('Invalid');
             }
-        }, 1500);
+        }, 3000);
     };
 
     if (isCheckingAuth) {
