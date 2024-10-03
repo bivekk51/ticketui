@@ -11,7 +11,7 @@ export default function TicketScan() {
     const [ticketId, setTicketId] = useState<string | null>(null);
     const [securityKey, setSecurityKey] = useState<string | null>(null);
     const [popupStatus, setPopupStatus] = useState<string | null>(null);
-    const [, setScannedUrl] = useState('');
+    const [scannedUrl, setScannedUrl] = useState('');
     const [canScan, setCanScan] = useState(true);
     const [attendeeName, setAttendeeName] = useState("");
     const [attendeeTicket, setAttendeeTicket] = useState("");
@@ -137,6 +137,7 @@ export default function TicketScan() {
                         left: '-9999px',
                     }}
                     autoFocus
+                    value={scannedUrl}
                     disabled={!canScan}
                 />
 
