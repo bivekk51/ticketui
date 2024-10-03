@@ -13,6 +13,8 @@ export default function TicketScan() {
     const [popupStatus, setPopupStatus] = useState<string | null>(null);
     const [scannedUrl, setScannedUrl] = useState('');
     const [canScan, setCanScan] = useState(true);
+    const [attendeeName, setattendeeName] = useState("")
+    const [attendeeTicket, setattendeeTicket] = useState("")
     const apiKey = process.env.NEXT_PUBLIC_API_KEY;
     let timeout: NodeJS.Timeout; // Specify the type for timeout
 
@@ -52,15 +54,28 @@ export default function TicketScan() {
     }, [scannedUrl, canScan]);
 
     const handleSubmit = useCallback(async () => {
+
         const apiUrl = `/api/v1/tickets/qr?ticket_id=${ticketId}&event_id=${eventId}&security_code=${securityKey}&api_key=${apiKey}`;
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
-            setPopupStatus(data.msg);
+            if (data.mssg === "Checked In!") {
+                const attendeName = data.attendee.title;
+                const attendeTicket = data.attendee.ticket.title;
+                setattendeeName(attendeName);
+                setattendeeTicket(attendeTicket);
+                setPopupStatus(data.msg);
+            } else {
+                setPopupStatus(data.msg);
+            }
         } catch (error) {
             console.error('Error fetching the API:', error);
         }
+
+
+
     }, [ticketId, eventId, securityKey, apiKey]);
+
 
     useEffect(() => {
         if (eventId && ticketId && securityKey) {
@@ -195,7 +210,7 @@ export default function TicketScan() {
                 </button>
             </div>
 
-            {popupStatus && <Popup status={popupStatus} />}
+            {popupStatus && <Popup status={popupStatus} attendeeName={attendeeName} attendeeTicket={attendeeTicket} />}
         </div>
     );
 }
