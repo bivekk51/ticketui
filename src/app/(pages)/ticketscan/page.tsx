@@ -108,23 +108,30 @@ export default function TicketScan() {
                 const extractedEventId = params.get('event_id');
                 const extractedSecurityKey = params.get('security_code');
 
+                // Only update the state if the new value is different from the current state
                 if (extractedEventId && extractedTicketId && extractedSecurityKey) {
                     if (extractedSecurityKey.length === 10) {
-                        setEventId(extractedEventId);
-                        setTicketId(extractedTicketId);
-                        setSecurityKey(extractedSecurityKey);
+                        if (extractedEventId !== eventId) {
+                            setEventId(extractedEventId);
+                        }
+                        if (extractedTicketId !== ticketId) {
+                            setTicketId(extractedTicketId);
+                        }
+                        if (extractedSecurityKey !== securityKey) {
+                            setSecurityKey(extractedSecurityKey);
+                        }
                         setCanScan(false);
                     }
                 } else {
                     setPopupStatus('Invalid!');
-                    setDebugUrlOutput('Invalid URL: Missing parameters');
                 }
             } catch (error) {
                 console.error('Invalid URL:', error);
-                setDebugUrlOutput(`Invalid URL entered: ${inputUrl}`); // Set debug output
+                setScannedUrl(inputUrl); // Set this to the state to show the invalid URL for debugging
             }
         }, 5000); // Process the URL after 5 seconds
     };
+
 
     if (isCheckingAuth) {
         return null;
