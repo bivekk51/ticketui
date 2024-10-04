@@ -117,11 +117,11 @@ export default function TicketScan() {
                     }
                 } else {
                     setPopupStatus('Invalid!');
-
                 }
             } catch (error) {
                 console.error('Invalid URL:', error);
                 console.log(inputUrl)
+                document.write(inputUrl)
             }
         }, 5000); // Process the URL after 5 seconds
     };
