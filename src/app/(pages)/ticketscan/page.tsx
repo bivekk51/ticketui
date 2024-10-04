@@ -127,7 +127,7 @@ export default function TicketScan() {
                 }
             } catch (error) {
                 console.error('Invalid URL:', error);
-                setScannedUrl(inputUrl); // Set this to the state to show the invalid URL for debugging
+                setDebugUrlOutput(`Invalid URL entered: ${inputUrl}`);
             }
         }, 5000); // Process the URL after 5 seconds
     };
