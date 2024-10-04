@@ -15,6 +15,7 @@ export default function TicketScan() {
     const [canScan, setCanScan] = useState(true);
     const [attendeeName, setAttendeeName] = useState("");
     const [attendeeTicket, setAttendeeTicket] = useState("");
+    const [debugUrlOutput, setDebugUrlOutput] = useState<string | null>(null); // For debugging URL output
     const apiKey = process.env.NEXT_PUBLIC_API_KEY;
     let timeout: NodeJS.Timeout;
 
@@ -59,6 +60,7 @@ export default function TicketScan() {
         setPopupStatus(null);
         setScannedUrl('');
         setCanScan(true);
+        setDebugUrlOutput(null); // Clear debug output
         const inputField = document.getElementById('qrInput');
         if (inputField) {
             inputField.focus();
@@ -99,13 +101,11 @@ export default function TicketScan() {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
             try {
-
                 const parsedUrl = new URL(inputUrl);
                 const params = new URLSearchParams(parsedUrl.search);
 
                 const extractedTicketId = params.get('ticket_id');
                 const extractedEventId = params.get('event_id');
-
                 const extractedSecurityKey = params.get('security_code');
 
                 if (extractedEventId && extractedTicketId && extractedSecurityKey) {
@@ -117,11 +117,11 @@ export default function TicketScan() {
                     }
                 } else {
                     setPopupStatus('Invalid!');
+                    setDebugUrlOutput('Invalid URL: Missing parameters');
                 }
             } catch (error) {
                 console.error('Invalid URL:', error);
-                console.log(inputUrl)
-                document.write(inputUrl)
+                setDebugUrlOutput(`Invalid URL entered: ${inputUrl}`); // Set debug output
             }
         }, 5000); // Process the URL after 5 seconds
     };
@@ -139,13 +139,18 @@ export default function TicketScan() {
                     id="qrInput"
                     type="text"
                     onChange={handleChange}
-
                     autoFocus
                     value={scannedUrl}
                     disabled={!canScan}
                 />
 
                 {canScan && <p className='text-lg'>Ready for Scan</p>}
+
+                {debugUrlOutput && (
+                    <div className="mt-4 p-2 bg-gray-100 text-red-500 rounded-lg">
+                        Debug Output: {debugUrlOutput}
+                    </div>
+                )}
 
                 <div className="mb-4">
                     <label htmlFor="eventId" className="block text-sm font-medium text-gray-700">
