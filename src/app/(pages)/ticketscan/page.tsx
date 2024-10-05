@@ -54,7 +54,7 @@ export default function TicketScan() {
         } catch (error) {
 
             console.error('Error fetching the API:', error);
-            setPopupStatus('Failed to validate ticket.');
+            setPopupStatus('Invalid QR Code');
         }
     }, [ticketId, eventId, securityKey, apiKey]);
 
