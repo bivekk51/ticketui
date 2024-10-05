@@ -15,9 +15,11 @@ export default function TicketScan() {
     const [canScan, setCanScan] = useState(true);
     const [attendeeName, setAttendeeName] = useState("");
     const [attendeeTicket, setAttendeeTicket] = useState("");
-    const [debugUrlOutput, setDebugUrlOutput] = useState<string | null>(null); // For debugging URL output
+
     const apiKey = process.env.NEXT_PUBLIC_API_KEY;
     let timeout: NodeJS.Timeout;
+
+
 
     useEffect(() => {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -28,28 +30,38 @@ export default function TicketScan() {
         }
     }, [router]);
 
+    // Handle submit: Make the API call for checking ticket validity
     const handleSubmit = useCallback(async () => {
+        // Clear any previous popup state before making the API call
+        setPopupStatus(null);
+
+
         const apiUrl = `/api/v1/tickets/qr?ticket_id=${ticketId}&event_id=${eventId}&security_code=${securityKey}&api_key=${apiKey}`;
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
+
+
             if (data.mssg === "Checked In!") {
                 const attendeeName = data.attendee.title;
                 const attendeeTicket = data.attendee.ticket.title;
                 setAttendeeName(attendeeName);
                 setAttendeeTicket(attendeeTicket);
-                setPopupStatus(data.msg);
+                setPopupStatus("Checked In!");
             } else {
-                setPopupStatus(data.msg);
+                setPopupStatus(data.msg || "Invalid QR Code");
             }
         } catch (error) {
+
             console.error('Error fetching the API:', error);
+            setPopupStatus('Failed to validate ticket.');
         }
     }, [ticketId, eventId, securityKey, apiKey]);
 
+    // Trigger handleSubmit when all parameters are set (valid inputs)
     useEffect(() => {
         if (eventId && ticketId && securityKey) {
-            handleSubmit();
+            handleSubmit();  // Call API only when all values are set
         }
     }, [eventId, ticketId, securityKey, handleSubmit]);
 
@@ -60,13 +72,14 @@ export default function TicketScan() {
         setPopupStatus(null);
         setScannedUrl('');
         setCanScan(true);
-        setDebugUrlOutput(null); // Clear debug output
+
         const inputField = document.getElementById('qrInput');
         if (inputField) {
             inputField.focus();
         }
     };
 
+    // Focus input on load and handle space/enter keys
     useEffect(() => {
         const inputField = document.getElementById('qrInput');
         if (inputField) {
@@ -78,7 +91,6 @@ export default function TicketScan() {
                 e.preventDefault();
                 handleNextScan();
             } else if (e.key === 'Enter') {
-                // Prevent the form from submitting or reloading the page
                 e.preventDefault();
             }
         };
@@ -86,6 +98,7 @@ export default function TicketScan() {
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
+
 
     useEffect(() => {
         if (canScan) {
@@ -98,45 +111,52 @@ export default function TicketScan() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputUrl = e.target.value;
+        setScannedUrl(inputUrl);
+
+
         clearTimeout(timeout);
         timeout = setTimeout(() => {
+
             try {
-                const parsedUrl = new URL(inputUrl);
-                const params = new URLSearchParams(parsedUrl.search);
+                if (inputUrl) {
 
-                const extractedTicketId = params.get('ticket_id');
-                const extractedEventId = params.get('event_id');
-                const extractedSecurityKey = params.get('security_code');
 
-                // Only update the state if the new value is different from the current state
-                if (extractedEventId && extractedTicketId && extractedSecurityKey) {
-                    if (extractedSecurityKey.length === 10) {
-                        if (extractedEventId !== eventId) {
+                    const parsedUrl = new URL(inputUrl);
+                    const params = new URLSearchParams(parsedUrl.search);
+
+                    const extractedTicketId = params.get('ticket_id');
+                    const extractedEventId = params.get('event_id');
+                    const extractedSecurityKey = params.get('security_code');
+
+                    if (extractedEventId && extractedTicketId && extractedSecurityKey) {
+                        if (extractedSecurityKey.length === 10) {
                             setEventId(extractedEventId);
-                        }
-                        if (extractedTicketId !== ticketId) {
                             setTicketId(extractedTicketId);
-                        }
-                        if (extractedSecurityKey !== securityKey) {
                             setSecurityKey(extractedSecurityKey);
+                            setCanScan(false);
+                            return;
                         }
-                        setCanScan(false);
                     }
-                } else {
-                    setPopupStatus('Invalid!');
+                    else {
+                        invalidPopup()
+                    }
+
                 }
+
+
             } catch (error) {
+
                 console.error('Invalid URL:', error);
-                setDebugUrlOutput(`Invalid URL entered: ${inputUrl}`);
+
             }
-        }, 5000); // Process the URL after 5 seconds
+        }, 1000);
     };
-
-
     if (isCheckingAuth) {
         return null;
     }
-
+    const invalidPopup = (): void => {
+        setPopupStatus('Invalid QR Code');
+    };
     return (
         <div className="min-h-screen flex items-center justify-center">
             <div className="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full transition-all duration-300">
@@ -146,6 +166,10 @@ export default function TicketScan() {
                     id="qrInput"
                     type="text"
                     onChange={handleChange}
+                    style={{
+                        position: 'absolute',  // Hide input field visually
+                        left: '-9999px',
+                    }}
                     autoFocus
                     value={scannedUrl}
                     disabled={!canScan}
@@ -153,11 +177,11 @@ export default function TicketScan() {
 
                 {canScan && <p className='text-lg'>Ready for Scan</p>}
 
-                {debugUrlOutput && (
-                    <div className="mt-4 p-2 bg-gray-100 text-red-500 rounded-lg">
-                        Debug Output: {debugUrlOutput}
-                    </div>
+
+                {popupStatus && (
+                    <Popup status={popupStatus} attendeeName={attendeeName} attendeeTicket={attendeeTicket} />
                 )}
+
 
                 <div className="mb-4">
                     <label htmlFor="eventId" className="block text-sm font-medium text-gray-700">
@@ -206,8 +230,6 @@ export default function TicketScan() {
                     Next Scan
                 </button>
             </div>
-
-            {popupStatus && <Popup status={popupStatus} attendeeName={attendeeName} attendeeTicket={attendeeTicket} />}
         </div>
     );
 }

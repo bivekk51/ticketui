@@ -26,7 +26,7 @@ const Popup: React.FC<PopupProps> = ({ status, attendeeName, attendeeTicket }) =
         message = 'Success Checked In!';
         bgColor = 'bg-green-500';
         imageSrc = '/assets/images/accepted.svg';
-    } else if (status === 'Invalid!' || status === 'Security code is not valid!') {
+    } else if (status === 'Invalid QR Code' || status === 'Security code is not valid!') {
         message = 'Invalid Ticket!';
         bgColor = 'bg-red-500';
         imageSrc = '/assets/images/failed.svg';
@@ -35,6 +35,7 @@ const Popup: React.FC<PopupProps> = ({ status, attendeeName, attendeeTicket }) =
         bgColor = 'bg-yellow-500';
         imageSrc = '/assets/images/alreadycheckedin.svg';
     }
+
 
     if (!isVisible) return null;
 
