@@ -21,18 +21,21 @@ export default function TicketScan() {
 
 
 
+
+
     useEffect(() => {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
         if (!isLoggedIn) {
             router.push('/');
+            //login xaina vaney login garauney
         } else {
             setIsCheckingAuth(false);
         }
     }, [router]);
 
-    // Handle submit: Make the API call for checking ticket validity
+
     const handleSubmit = useCallback(async () => {
-        // Clear any previous popup state before making the API call
+
         setPopupStatus(null);
 
 
@@ -41,15 +44,16 @@ export default function TicketScan() {
             const response = await fetch(apiUrl);
             const data = await response.json();
 
-
+            //api call 
             if (data.mssg === "Checked In!") {
                 const attendeeName = data.attendee.title;
                 const attendeeTicket = data.attendee.ticket.title;
                 setAttendeeName(attendeeName);
                 setAttendeeTicket(attendeeTicket);
+                //function to set attendee ko naam ra ticket type
                 setPopupStatus("Checked In!");
             } else {
-                setPopupStatus(data.msg || "Invalid QR Code");
+                setPopupStatus(data.msg);
             }
         } catch (error) {
 
@@ -58,10 +62,11 @@ export default function TicketScan() {
         }
     }, [ticketId, eventId, securityKey, apiKey]);
 
-    // Trigger handleSubmit when all parameters are set (valid inputs)
+
     useEffect(() => {
         if (eventId && ticketId && securityKey) {
-            handleSubmit();  // Call API only when all values are set
+            handleSubmit();
+            //if we have all the value hit the api call
         }
     }, [eventId, ticketId, securityKey, handleSubmit]);
 
@@ -72,14 +77,14 @@ export default function TicketScan() {
         setPopupStatus(null);
         setScannedUrl('');
         setCanScan(true);
-
+        //space bar ko click ma focus back to Qr input and set all value as empty/null
         const inputField = document.getElementById('qrInput');
         if (inputField) {
             inputField.focus();
         }
     };
 
-    // Focus input on load and handle space/enter keys
+
     useEffect(() => {
         const inputField = document.getElementById('qrInput');
         if (inputField) {
@@ -94,6 +99,7 @@ export default function TicketScan() {
                 e.preventDefault();
             }
         };
+        //enter ma form submit nahos space ma sab clear hos
 
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
@@ -102,6 +108,7 @@ export default function TicketScan() {
 
     useEffect(() => {
         if (canScan) {
+            //disable scan after 1 scan until space key is pressed
             const inputField = document.getElementById('qrInput');
             if (inputField) {
                 inputField.focus();
@@ -113,71 +120,66 @@ export default function TicketScan() {
         const inputUrl = e.target.value;
         setScannedUrl(inputUrl);
 
-
+        //Qr ko input liney
         clearTimeout(timeout);
+
+
         timeout = setTimeout(() => {
-
             try {
-                if (inputUrl) {
+                const parsedUrl = new URL(inputUrl);
+                const params = new URLSearchParams(parsedUrl.search);
+                const extractedTicketId = params.get('ticket_id');
+                const extractedEventId = params.get('event_id');
+                const extractedSecurityKey = params.get('security_code');
+                //get params from each url ani yedi params paaim vaney matra value set garnet
+                if (extractedEventId && extractedTicketId && extractedSecurityKey) {
+                    if (extractedSecurityKey.length === 10) {
+                        setEventId(extractedEventId);
+                        setTicketId(extractedTicketId);
+                        setSecurityKey(extractedSecurityKey);
+                        setCanScan(false);
 
-
-                    const parsedUrl = new URL(inputUrl);
-                    const params = new URLSearchParams(parsedUrl.search);
-
-                    const extractedTicketId = params.get('ticket_id');
-                    const extractedEventId = params.get('event_id');
-                    const extractedSecurityKey = params.get('security_code');
-
-                    if (extractedEventId && extractedTicketId && extractedSecurityKey) {
-                        if (extractedSecurityKey.length === 10) {
-                            setEventId(extractedEventId);
-                            setTicketId(extractedTicketId);
-                            setSecurityKey(extractedSecurityKey);
-                            setCanScan(false);
-                            return;
-                        }
                     }
-                    else {
-                        invalidPopup()
-                    }
-
                 }
 
 
-            } catch (error) {
 
+
+            } catch (error) {
                 console.error('Invalid URL:', error);
-                setPopupStatus('Invalid QR Code');
+
             }
-        }, 5000);
+        }, 1000); // Check after  seconds
     };
+
     if (isCheckingAuth) {
         return null;
+        //login xa xaina check huda null return garney
     }
-    const invalidPopup = (): void => {
-        setPopupStatus('Invalid QR Code');
-    };
+
+
+
     return (
         <div className="min-h-screen flex items-center justify-center">
             <div className="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full transition-all duration-300">
                 <h1 className="text-2xl font-bold text-center mb-6 text-[#0A1B4D]">Ticket Scan</h1>
-
+                {/* input field hidden one junley chai Qr accept garxa */}
                 <input
                     id="qrInput"
                     type="text"
                     onChange={handleChange}
                     style={{
-                        position: 'absolute',  // Hide input field visually
+                        position: 'absolute',
                         left: '-9999px',
                     }}
                     autoFocus
                     value={scannedUrl}
                     disabled={!canScan}
                 />
-
+                {/* scan garna milxa vanera dekhauney text */}
                 {canScan && <p className='text-lg'>Ready for Scan</p>}
 
-
+                {/* popup status send garney with attendee ko name and ticket if they exist */}
                 {popupStatus && (
                     <Popup status={popupStatus} attendeeName={attendeeName} attendeeTicket={attendeeTicket} />
                 )}
