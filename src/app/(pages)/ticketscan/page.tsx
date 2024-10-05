@@ -54,7 +54,7 @@ export default function TicketScan() {
         } catch (error) {
 
             console.error('Error fetching the API:', error);
-            setPopupStatus('Invalid QR Code');
+
         }
     }, [ticketId, eventId, securityKey, apiKey]);
 
@@ -147,9 +147,9 @@ export default function TicketScan() {
             } catch (error) {
 
                 console.error('Invalid URL:', error);
-
+                setPopupStatus('Invalid QR Code');
             }
-        }, 1000);
+        }, 5000);
     };
     if (isCheckingAuth) {
         return null;
